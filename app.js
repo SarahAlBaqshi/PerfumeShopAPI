@@ -1,35 +1,50 @@
 const express = require("express");
 const cors = require("cors");
+const bodyParser = require("body-parser");
+const db = require("./db/db");
+const path = require("path");
+
+const { Perfume } = require("./db/models");
+
+// Routes
+const perfumeRoutes = require("./routes/perfumes");
 
 //Create Express App instance
 const app = express();
 
 app.use(cors());
+app.use(bodyParser.json());
 
-//Data
-let perfumes = require("./perfumes");
+//Routers
+app.use("/perfumes", perfumeRoutes);
+app.use("/media", express.static(path.join(__dirname, "media")));
 
-app.get("/perfumes", (req, res) => {
-  res.json(perfumes);
+//Not Found Paths
+app.use((req, res, next) => {
+  const error = new Error("Path not found");
+  error.status = 404;
+  next(error);
 });
 
-app.post("/perfumes", (req, res) => {});
+//Error Handling Middleware
+app.use((err, req, res, next) => {
+  res.status(err.status || 500);
+  res.json(err.message || "Internal Server Error");
+});
 
-app.delete("/perfumes/:perfumeID", (req, res) => {
-  const { perfumeID } = req.params;
-
-  const foundPerfume = perfumes.find((perfume) => perfume.id === +perfumeID);
-  if (foundPerfume) {
-    perfumes = perfumes.filter((_perfume) => _perfume !== foundPerfume);
-    res.status(204).end();
-  } else {
-    res.status(404).json({ message: "Perfume not found" });
+const run = async () => {
+  try {
+    await db.sync();
+    console.log("Connection to the database successful!");
+    const perfumes = await Perfume.findAll();
+    // perfumes.forEach((perfume) => console.log(perfume.toJSON()));
+  } catch (error) {
+    console.error("Error connecting to the database: ", error);
   }
 
-  perfumes = perfumes.filter((_perfume) => _perfume.id !== +perfumeID);
-  res.status(204).end();
-});
+  await app.listen(8000, () => {
+    console.log("The application is running on localhost:8000");
+  });
+};
 
-app.listen(8000, () => {
-  console.log("The application is running on localhost:8000");
-});
+run();
