@@ -2,7 +2,6 @@ const express = require("express");
 
 //Controllers
 const {
-  perfumeCreate,
   perfumeList,
   perfumeUpdate,
   perfumeDelete,
@@ -28,9 +27,6 @@ router.param("perfumeID", async (req, res, next, perfumeID) => {
 
 //Perfume List
 router.get("/", perfumeList);
-
-//Perfume Create
-router.post("/", upload.single("image"), perfumeCreate);
 
 //Perfume Update
 router.put("/:perfumeID", upload.single("image"), perfumeUpdate);

@@ -1,5 +1,7 @@
 const { DataTypes, Model } = require("sequelize");
 const db = require("..");
+const { Sequelize } = require("../db");
+const SequelizeSlugify = require("sequelize-slugify");
 
 class Perfume extends Model {}
 
@@ -9,10 +11,10 @@ Perfume.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    // slug: {
-    //   type: DataTypes.STRING,
-    //   unique: true,
-    // },
+    slug: {
+      type: DataTypes.STRING,
+      unique: true,
+    },
     description: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -36,5 +38,9 @@ Perfume.init(
     sequelize: db,
   }
 );
+
+SequelizeSlugify.slugifyModel(Perfume, {
+  source: ["name"],
+});
 
 module.exports = Perfume;

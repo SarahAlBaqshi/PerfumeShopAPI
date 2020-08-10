@@ -1,6 +1,6 @@
 //Data
 
-const { Perfume } = require("../db/models");
+const { Perfume, Shop } = require("../db/models");
 
 exports.fetchPerfume = async (perfumeID) => {
   try {
@@ -14,21 +14,14 @@ exports.fetchPerfume = async (perfumeID) => {
 exports.perfumeList = async (req, res, next) => {
   try {
     const _perfumes = await Perfume.findAll({
-      attributes: { exclude: ["createdAt", "updatedAt"] },
+      attributes: { exclude: ["shopId", "createdAt", "updatedAt"] },
+      include: {
+        model: Shop,
+        as: "shop",
+        attributes: ["name"],
+      },
     });
     res.json(_perfumes);
-  } catch (error) {
-    next(error);
-  }
-};
-
-exports.perfumeCreate = async (req, res, next) => {
-  try {
-    req.body.image = `${req.protocol}://${req.get("host")}/media/${
-      req.file.filename
-    }`;
-    const newPerfume = await Perfume.create(req.body);
-    res.status(201).json(newPerfume);
   } catch (error) {
     next(error);
   }
@@ -37,9 +30,11 @@ exports.perfumeCreate = async (req, res, next) => {
 exports.perfumeUpdate = async (req, res, next) => {
   //find the perfume
   try {
-    req.body.image = `${req.protocol}://${req.get("host")}/media/${
-      req.file.filename
-    }`;
+    if (req.file) {
+      req.body.image = `${req.protocol}://${req.get("host")}/media/${
+        req.file.filename
+      }`;
+    }
     await req.perfume.update(req.body);
     res.status(204).end();
   } catch (error) {
