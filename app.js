@@ -3,6 +3,7 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 const db = require("./db/db");
 const path = require("path");
+const passport = require("passport");
 
 const { Perfume } = require("./db/models");
 
@@ -10,12 +11,17 @@ const { Perfume } = require("./db/models");
 const perfumeRoutes = require("./routes/perfumes");
 const shopRoutes = require("./routes/shops");
 const userRoutes = require("./routes/users");
+const { localStrategy } = require("./middleware/passport");
 
 //Create Express App instance
 const app = express();
 
 app.use(cors());
 app.use(bodyParser.json());
+app.use(passport.initialize());
+passport.use(localStrategy);
+
+//Must be above user routes
 
 //Routers
 app.use("/perfumes", perfumeRoutes);
