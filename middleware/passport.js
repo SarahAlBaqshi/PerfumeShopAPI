@@ -13,9 +13,7 @@ exports.localStrategy = new LocalStrategy(async (username, password, done) => {
       ? await bcrypt.compare(password, user.password) // first password from req.body, second password is from the database
       : (passwordsMatch = false);
 
-    passwordsMatch
-      ? done(null, user) //null: no error, user: save user in request
-      : done(null, false);
+    return passwordsMatch ? done(null, user) : done(null, false);
   } catch (error) {
     done(error);
   }
