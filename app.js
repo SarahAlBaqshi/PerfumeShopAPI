@@ -11,7 +11,7 @@ const { Perfume } = require("./db/models");
 const perfumeRoutes = require("./routes/perfumes");
 const shopRoutes = require("./routes/shops");
 const userRoutes = require("./routes/users");
-const { localStrategy } = require("./middleware/passport");
+const { localStrategy, jwtStrategy } = require("./middleware/passport");
 
 //Create Express App instance
 const app = express();
@@ -20,6 +20,7 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(passport.initialize());
 passport.use(localStrategy);
+passport.use(jwtStrategy);
 
 //Must be above user routes
 

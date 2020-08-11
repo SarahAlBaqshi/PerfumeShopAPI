@@ -1,9 +1,11 @@
 const LocalStrategy = require("passport-local").Strategy;
 const bcrypt = require("bcrypt");
 const JWTStrategy = require("passport-jwt").Strategy;
+const { fromAuthHeaderAsBearerToken } = require("passport-jwt").ExtractJwt;
 
 //Models
 const { User } = require("../db/models");
+const { JWT_SECRET } = require("../controllers/config/keys");
 
 exports.localStrategy = new LocalStrategy(async (username, password, done) => {
   try {
@@ -20,4 +22,25 @@ exports.localStrategy = new LocalStrategy(async (username, password, done) => {
   }
 });
 
-// exports.jwtStrategy = new JWTStrategy({}, () => {});
+exports.jwtStrategy = new JWTStrategy(
+  {
+    jwtFromRequest: fromAuthHeaderAsBearerToken(), //extraction of token
+    secretOrKey: JWT_SECRET,
+  },
+  async (jwtPayload, done) => {
+    //TODO: check if token is expired
+    if (Date.now() > jwtPayload.expires) {
+      return done(null, false); // this will throw a 401
+    }
+    try {
+      const user = await User.findByPk(jwtPayload.id);
+      return done(null, user); // if there is no user, this will throw a 401
+    } catch (error) {
+      done(error);
+    }
+
+    //if token is not expired: fetch user from model then pass it to request
+
+    //
+  }
+);

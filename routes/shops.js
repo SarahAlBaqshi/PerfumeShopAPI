@@ -12,6 +12,7 @@ const {
 
 //Middleware
 const upload = require("../middleware/multer");
+const passport = require("passport");
 
 const router = express.Router();
 
@@ -31,7 +32,12 @@ router.param("shopId", async (req, res, next, shopId) => {
 router.get("/", shopList);
 
 //Shop Create
-router.post("/", upload.single("image"), shopCreate);
+router.post(
+  "/",
+  passport.authenticate("jwt", { session: false }),
+  upload.single("image"),
+  shopCreate
+);
 
 //Shop Update
 router.put("/:shopId", upload.single("image"), shopUpdate);
