@@ -38,9 +38,5 @@ exports.jwtStrategy = new JWTStrategy(
     } catch (error) {
       done(error);
     }
-
-    //if token is not expired: fetch user from model then pass it to request
-
-    //
   }
 );
