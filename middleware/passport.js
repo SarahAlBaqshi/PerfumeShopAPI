@@ -1,5 +1,6 @@
 const LocalStrategy = require("passport-local").Strategy;
 const bcrypt = require("bcrypt");
+const JWTStrategy = require("passport-jwt").Strategy;
 
 //Models
 const { User } = require("../db/models");
@@ -18,3 +19,5 @@ exports.localStrategy = new LocalStrategy(async (username, password, done) => {
     done(error);
   }
 });
+
+// exports.jwtStrategy = new JWTStrategy({}, () => {});
