@@ -17,6 +17,7 @@ exports.signup = async (req, res, next) => {
       lastName: newUser.lastName,
       username: newUser.username,
       role: newUser.role,
+      shopSlug: shop.slug,
       expires: Date.now() + JWT_EXPIRATION_MS,
     };
 

@@ -11,6 +11,10 @@ Shop.hasMany(Perfume, {
 
 Perfume.belongsTo(Shop, { as: "shop" });
 
+User.hasOne(Shop, { as: "shop", foreignKey: "userId" });
+
+Shop.belongsTo(User, { as: "user" });
+
 module.exports = {
   Perfume,
   Shop,
