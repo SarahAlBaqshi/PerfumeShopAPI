@@ -13,7 +13,7 @@ Perfume.belongsTo(Shop, { as: "shop" });
 
 User.hasOne(Shop, { as: "shop", foreignKey: "userId" });
 
-Shop.belongsTo(User, { as: "user" });
+Shop.belongsTo(User, { as: "user", foreignKey: "userId" });
 
 module.exports = {
   Perfume,
