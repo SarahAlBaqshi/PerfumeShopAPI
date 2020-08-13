@@ -1,5 +1,5 @@
 const bcrypt = require("bcrypt");
-const { User } = require("../db/models");
+const { User, Shop } = require("../db/models");
 const jwt = require("jsonwebtoken");
 const { JWT_EXPIRATION_MS, JWT_SECRET } = require("./config/keys");
 
@@ -16,9 +16,10 @@ exports.signup = async (req, res, next) => {
       firstName: newUser.firstName,
       lastName: newUser.lastName,
       username: newUser.username,
+      shopSlug: null,
       role: newUser.role,
-      shopSlug: shop.slug,
-      expires: Date.now() + JWT_EXPIRATION_MS,
+
+      exp: Date.now() + JWT_EXPIRATION_MS,
     };
 
     const token = jwt.sign(JSON.stringify(payload), JWT_SECRET);
@@ -30,16 +31,17 @@ exports.signup = async (req, res, next) => {
 };
 
 exports.signin = async (req, res, next) => {
-  console.log("exports.signin -> req", req);
   const { user } = req;
+  const shop = await Shop.findOne({ where: { userId: user.id } });
   const payload = {
     id: user.id,
+    username: user.username,
     email: user.email,
     firstName: user.firstName,
     lastName: user.lastName,
-    username: user.username,
     role: user.role,
-    expires: Date.now() + JWT_EXPIRATION_MS,
+    shopSlug: shop ? shop.slug : null,
+    exp: Date.now() + JWT_EXPIRATION_MS,
   };
   const token = jwt.sign(JSON.stringify(payload), JWT_SECRET);
   res.json({ token });

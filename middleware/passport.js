@@ -29,7 +29,7 @@ exports.jwtStrategy = new JWTStrategy(
   },
   async (jwtPayload, done) => {
     //TODO: check if token is expired
-    if (Date.now() > jwtPayload.expires) {
+    if (Date.now() > jwtPayload.exp) {
       return done(null, false); // this will throw a 401
     }
     try {

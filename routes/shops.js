@@ -40,12 +40,26 @@ router.post(
 );
 
 //Shop Update
-router.put("/:shopId", upload.single("image"), shopUpdate);
+router.put(
+  "/:shopId",
+  passport.authenticate("jwt", { session: false }),
+  upload.single("image"),
+  shopUpdate
+);
 
 //Shop Delete
-router.delete("/:shopId", shopDelete);
+router.delete(
+  "/:shopId",
+  passport.authenticate("jwt", { session: false }),
+  shopDelete
+);
 
 //Perfume Create
-router.post("/:shopId/perfumes", upload.single("image"), perfumeCreate);
+router.post(
+  "/:shopId/perfumes",
+  passport.authenticate("jwt", { session: false }),
+  upload.single("image"),
+  perfumeCreate
+);
 
 module.exports = router;

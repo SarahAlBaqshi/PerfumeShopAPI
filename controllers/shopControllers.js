@@ -4,7 +4,7 @@ const { Shop, Perfume } = require("../db/models");
 
 exports.fetchShop = async (shopId) => {
   try {
-    const shop = await Shop.findOne({ where: { userId: user.id } });
+    const shop = await Shop.findByPk(shopId);
     return shop;
   } catch (error) {
     next(error);
@@ -56,13 +56,19 @@ exports.shopCreate = async (req, res, next) => {
 exports.shopUpdate = async (req, res, next) => {
   //find the shop
   try {
-    if (req.file) {
-      req.body.image = `${req.protocol}://${req.get("host")}/media/${
-        req.file.filename
-      }`;
+    if (req.user.role === "admin" || req.user.id === req.shop.userId) {
+      if (req.file) {
+        req.body.image = `${req.protocol}://${req.get("host")}/media/${
+          req.file.filename
+        }`;
+      }
+      await req.shop.update(req.body);
+      res.status(204).end();
+    } else {
+      const err = new Error("Unauthorized");
+      err.status = 401;
+      next(err);
     }
-    await req.shop.update(req.body);
-    res.status(204).end();
   } catch (error) {
     next(error);
   }
@@ -70,8 +76,14 @@ exports.shopUpdate = async (req, res, next) => {
 
 exports.shopDelete = async (req, res, next) => {
   try {
-    await req.shop.destroy();
-    res.status(204).end();
+    if (req.user.role === "admin" || req.user.id === req.shop.userId) {
+      await req.shop.destroy();
+      res.status(204).end();
+    } else {
+      const err = new Error("Unauthorized");
+      err.status = 401;
+      next(err);
+    }
   } catch (error) {
     next(error);
   }
@@ -79,12 +91,18 @@ exports.shopDelete = async (req, res, next) => {
 
 exports.perfumeCreate = async (req, res, next) => {
   try {
-    req.body.image = `${req.protocol}://${req.get("host")}/media/${
-      req.file.filename
-    }`;
-    req.body.shopId = req.shop.id;
-    const newPerfume = await Perfume.create(req.body);
-    res.status(201).json(newPerfume);
+    if (req.user.id === req.shop.userId) {
+      req.body.image = `${req.protocol}://${req.get("host")}/media/${
+        req.file.filename
+      }`;
+      req.body.shopId = req.shop.id;
+      const newPerfume = await Perfume.create(req.body);
+      res.status(201).json(newPerfume);
+    } else {
+      const err = new Error("Unauthorized");
+      err.status = 401;
+      next(err);
+    }
   } catch (error) {
     next(error);
   }
