@@ -34,10 +34,11 @@ exports.shopCreate = async (req, res, next) => {
     const foundShop = await Shop.findOne({
       where: { userId: req.user.id },
     });
+
     if (foundShop) {
       const err = new Error("You already have a shop");
       err.status = 403;
-      next(err);
+      return next(err);
     }
 
     if (req.file) {
