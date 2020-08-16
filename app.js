@@ -47,10 +47,8 @@ const PORT = process.env.PORT || 8000;
 
 const run = async () => {
   try {
-    await db.sync();
+    await db.sync({ force: true });
     console.log("Connection to the database successful!");
-    const perfumes = await Perfume.findAll();
-    // perfumes.forEach((perfume) => console.log(perfume.toJSON()));
   } catch (error) {
     console.error("Error connecting to the database: ", error);
   }
