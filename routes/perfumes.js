@@ -10,6 +10,7 @@ const {
 
 //Middleware
 const upload = require("../middleware/multer");
+const passport = require("passport");
 
 const router = express.Router();
 
@@ -29,9 +30,18 @@ router.param("perfumeID", async (req, res, next, perfumeID) => {
 router.get("/", perfumeList);
 
 //Perfume Update
-router.put("/:perfumeID", upload.single("image"), perfumeUpdate);
+router.put(
+  "/:perfumeID",
+  passport.authenticate("jwt", { session: false }),
+  upload.single("image"),
+  perfumeUpdate
+);
 
 //Perfume Delete
-router.delete("/:perfumeID", perfumeDelete);
+router.delete(
+  "/:perfumeID",
+  passport.authenticate("jwt", { session: false }),
+  perfumeDelete
+);
 
 module.exports = router;
