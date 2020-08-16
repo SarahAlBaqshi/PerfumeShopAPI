@@ -42,9 +42,9 @@ exports.shopCreate = async (req, res, next) => {
     }
 
     if (req.file) {
-      req.body.image = `${req.protocol}://${req.get("host")}/media/${
-        req.file.filename
-      }`;
+      req.body.image = `${process.env.PORT ? "https" : "http"}://${req.get(
+        "host"
+      )}/media/${req.file.filename}`;
     }
     req.body.userId = req.user.id;
     const newShop = await Shop.create(req.body);
@@ -59,9 +59,9 @@ exports.shopUpdate = async (req, res, next) => {
   try {
     if (req.user.role === "admin" || req.user.id === req.shop.userId) {
       if (req.file) {
-        req.body.image = `${req.protocol}://${req.get("host")}/media/${
-          req.file.filename
-        }`;
+        req.body.image = `${process.env.PORT ? "https" : "http"}://${req.get(
+          "host"
+        )}/media/${req.file.filename}`;
       }
       await req.shop.update(req.body);
       res.status(204).end();
@@ -93,9 +93,10 @@ exports.shopDelete = async (req, res, next) => {
 exports.perfumeCreate = async (req, res, next) => {
   try {
     if (req.user.id === req.shop.userId) {
-      req.body.image = `${req.protocol}://${req.get("host")}/media/${
-        req.file.filename
-      }`;
+      req.body.image = `${process.env.PORT ? "https" : "http"}://${req.get(
+        "host"
+      )}/media/${req.file.filename}`;
+
       req.body.shopId = req.shop.id;
       const newPerfume = await Perfume.create(req.body);
       res.status(201).json(newPerfume);
