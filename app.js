@@ -12,6 +12,7 @@ const perfumeRoutes = require("./routes/perfumes");
 const shopRoutes = require("./routes/shops");
 const userRoutes = require("./routes/users");
 const { localStrategy, jwtStrategy } = require("./middleware/passport");
+const orderRoutes = require("./routes/orders");
 
 //Create Express App instance
 const app = express();
@@ -29,6 +30,7 @@ app.use("/perfumes", perfumeRoutes);
 app.use("/shops", shopRoutes);
 app.use("/media", express.static(path.join(__dirname, "media")));
 app.use(userRoutes);
+app.use(orderRoutes);
 
 //Not Found Paths
 app.use((req, res, next) => {
